@@ -433,6 +433,7 @@
   let originalURL = null;
   let resultURL = null;
   let resultBlob = null;
+  let transparentURL = null; // always the original transparent PNG
   let currentBgType = 'transparent';
   let currentBgColor = null;
   let currentBgImage = null;
@@ -495,6 +496,7 @@
       const blob = await response.blob();
       resultBlob = blob;
       resultURL = URL.createObjectURL(blob);
+      transparentURL = resultURL; // save original transparent PNG URL
       resultImg.src = resultURL;
 
       updateDownloadBtn();
@@ -517,6 +519,7 @@
     if (resultURL) URL.revokeObjectURL(resultURL);
     originalURL = resultURL = null;
     resultBlob = null;
+    transparentURL = null;
     currentBgType = 'transparent';
     currentBgColor = null;
     currentBgImage = null;
@@ -568,7 +571,13 @@
         if (type === 'gradient') currentBgColor = 'gradient-purple';
         if (type === 'gradient2') currentBgColor = 'gradient-blue';
         currentBgImage = null;
-        applyBackground();
+        if (type === 'transparent') {
+          resultURL = transparentURL;
+          resultImg.src = resultURL;
+          updateDownloadBtn();
+        } else {
+          applyBackground();
+        }
       });
     });
 
@@ -600,10 +609,11 @@
   }
 
   async function applyBackground() {
-    if (!resultBlob) return;
+    if (!transparentURL) return;
 
     const fgImg = new Image();
-    fgImg.src = resultURL;
+    fgImg.crossOrigin = 'anonymous';
+    fgImg.src = transparentURL;
     await new Promise(r => { fgImg.onload = r; });
 
     const canvas = document.createElement('canvas');
@@ -636,9 +646,8 @@
       ctx.drawImage(fgImg, 0, 0);
     }
 
-    // Update preview
+    // Update preview (never revoke transparentURL)
     const newURL = canvas.toDataURL('image/png');
-    if (resultURL && resultURL.startsWith('blob:')) URL.revokeObjectURL(resultURL);
     resultURL = newURL;
     resultImg.src = resultURL;
     updateDownloadBtn();
