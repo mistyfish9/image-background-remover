@@ -261,14 +261,24 @@
       background-color: #fff;
     }
 
-    .bg-color-input-wrap { position: relative; }
-    .bg-color-input-wrap input[type=color] {
+    .bg-color-input-wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .bg-color-preview {
       width: 36px; height: 36px; border-radius: 8px; border: 2px solid transparent;
-      cursor: pointer; padding: 2px; background: none;
-      transition: border-color .15s;
+      cursor: pointer; transition: border-color .15s; position: relative; overflow: hidden;
     }
-    .bg-color-input-wrap input[type=color]:hover { border-color: var(--accent); }
-    .bg-color-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 2px; }
+    .bg-color-preview:hover { border-color: var(--accent); }
+    .bg-color-preview input[type=color] {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      opacity: 0; cursor: pointer; border: none; padding: 0;
+    }
+    .bg-color-apply {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      background: var(--accent); color: #fff; cursor: pointer; border: none;
+      transition: opacity .15s; white-space: nowrap;
+    }
+    .bg-color-apply:hover { opacity: .85; }
+    .bg-color-label { font-size: 11px; color: var(--text-muted); text-align: center; }
 
     .bg-upload-btn {
       display: inline-flex; align-items: center; gap: 6px;
@@ -335,9 +345,12 @@
           <div class="bg-swatch" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)" data-type="gradient2" title="Blue Gradient"></div>
           <div class="divider"></div>
           <div class="bg-color-input-wrap" title="Custom color" id="custom-color-wrap">
-            <input type="color" id="custom-color" value="#7c6dfa" />
-            <div class="bg-color-label">Custom</div>
+            <div class="bg-color-preview" id="custom-color-preview" style="background:#7c6dfa">
+              <input type="color" id="custom-color" value="#7c6dfa" />
+            </div>
+            <div class="bg-color-label">Pick</div>
           </div>
+          <button class="bg-color-apply" id="custom-color-apply">Apply Color</button>
           <label class="bg-upload-btn" for="bg-file-input">🖼️ Image</label>
           <input type="file" id="bg-file-input" accept="image/*" />
         </div>
@@ -380,9 +393,12 @@
           <div class="bg-swatch" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)" data-type="gradient2" title="Blue Gradient"></div>
           <div class="divider"></div>
           <div class="bg-color-input-wrap" title="Custom color" id="custom-color-wrap">
-            <input type="color" id="custom-color" value="#7c6dfa" />
-            <div class="bg-color-label">Custom</div>
+            <div class="bg-color-preview" id="custom-color-preview" style="background:#7c6dfa">
+              <input type="color" id="custom-color" value="#7c6dfa" />
+            </div>
+            <div class="bg-color-label">Pick</div>
           </div>
+          <button class="bg-color-apply" id="custom-color-apply">Apply Color</button>
           <label class="bg-upload-btn" for="bg-file-input">🖼️ Image</label>
           <input type="file" id="bg-file-input" accept="image/*" />
         </div>
@@ -581,20 +597,21 @@
       });
     });
 
-    const applyCustomColor = () => {
+    // Update preview swatch color live as user picks
+    customColorInput.addEventListener('input', () => {
+      document.getElementById('custom-color-preview').style.background = customColorInput.value;
+    });
+    customColorInput.addEventListener('change', () => {
+      document.getElementById('custom-color-preview').style.background = customColorInput.value;
+    });
+
+    // Apply button applies the chosen color
+    document.getElementById('custom-color-apply').addEventListener('click', () => {
       document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
       currentBgType = 'color';
       currentBgColor = customColorInput.value;
       currentBgImage = null;
       applyBackground();
-    };
-    // 'input' fires while dragging, 'change' fires on confirm — cover both cases
-    customColorInput.addEventListener('input', applyCustomColor);
-    customColorInput.addEventListener('change', applyCustomColor);
-    // Also handle clicking directly on the wrap label area
-    document.getElementById('custom-color-wrap').addEventListener('click', () => {
-      // Small delay to let color picker update the value first
-      setTimeout(applyCustomColor, 100);
     });
 
     bgFileInput.addEventListener('change', e => {
