@@ -1,5 +1,5 @@
 // Cloudflare Worker - remove.bg API proxy
-const REMOVE_BG_API_KEY = REMOVE_BG_KEY; // Set via Cloudflare Workers secret
+// API key is injected via env.REMOVE_BG_KEY (set as a Worker secret)
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',

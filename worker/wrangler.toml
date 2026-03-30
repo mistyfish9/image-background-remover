@@ -1,5 +1,4 @@
-{
-  "name": "image-bg-remover-worker",
-  "main": "index.js",
-  "compatibility_date": "2024-01-01"
-}
+name = "image-bg-remover-worker"
+main = "index.js"
+compatibility_date = "2024-01-01"
+account_id = "9765931d052037541367403185e3104d"
