@@ -235,6 +235,53 @@
     }
     @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity:0; } }
 
+
+    /* ── Background Replace Panel ── */
+    .bg-panel {
+      width: 100%; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+    .bg-panel-title { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 14px; letter-spacing: .5px; text-transform: uppercase; }
+    .bg-options { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+    .bg-swatch {
+      width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+      border: 2px solid transparent; transition: all .15s;
+      flex-shrink: 0;
+    }
+    .bg-swatch:hover, .bg-swatch.active { border-color: var(--accent); transform: scale(1.1); }
+    .bg-swatch.transparent {
+      background-image: linear-gradient(45deg, #aaa 25%, transparent 25%),
+        linear-gradient(-45deg, #aaa 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #aaa 75%),
+        linear-gradient(-45deg, transparent 75%, #aaa 75%);
+      background-size: 10px 10px;
+      background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+      background-color: #fff;
+    }
+
+    .bg-color-input-wrap { position: relative; }
+    .bg-color-input-wrap input[type=color] {
+      width: 36px; height: 36px; border-radius: 8px; border: 2px solid transparent;
+      cursor: pointer; padding: 2px; background: none;
+      transition: border-color .15s;
+    }
+    .bg-color-input-wrap input[type=color]:hover { border-color: var(--accent); }
+    .bg-color-label { font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 2px; }
+
+    .bg-upload-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: 13px; font-weight: 500; color: var(--text-muted);
+      cursor: pointer; transition: all .15s;
+    }
+    .bg-upload-btn:hover { border-color: var(--accent); color: var(--accent2); }
+    #bg-file-input { display: none; }
+
+    .divider { width: 1px; height: 36px; background: var(--border); }
+
     @media (max-width: 600px) {
       nav { padding: 14px 20px; }
       .hero { padding: 90px 16px 48px; }
@@ -272,6 +319,30 @@
         <div class="spinner"></div>
         <div class="processing-text">Removing background…</div>
       </div>
+
+      <!-- Background Replace Panel -->
+      <div class="bg-panel" id="bg-panel">
+        <div class="bg-panel-title">Replace Background</div>
+        <div class="bg-options">
+          <div class="bg-swatch transparent active" data-type="transparent" title="Transparent"></div>
+          <div class="bg-swatch" style="background:#ffffff" data-type="color" data-color="#ffffff" title="White"></div>
+          <div class="bg-swatch" style="background:#000000" data-type="color" data-color="#000000" title="Black"></div>
+          <div class="bg-swatch" style="background:#f8f0e3" data-type="color" data-color="#f8f0e3" title="Cream"></div>
+          <div class="bg-swatch" style="background:#e8f4fd" data-type="color" data-color="#e8f4fd" title="Light Blue"></div>
+          <div class="bg-swatch" style="background:#e8fdf0" data-type="color" data-color="#e8fdf0" title="Light Green"></div>
+          <div class="bg-swatch" style="background:#fde8f4" data-type="color" data-color="#fde8f4" title="Light Pink"></div>
+          <div class="bg-swatch" style="background:linear-gradient(135deg,#7c6dfa,#ec4899)" data-type="gradient" title="Purple Gradient"></div>
+          <div class="bg-swatch" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)" data-type="gradient2" title="Blue Gradient"></div>
+          <div class="divider"></div>
+          <div class="bg-color-input-wrap" title="Custom color">
+            <input type="color" id="custom-color" value="#ffffff" />
+            <div class="bg-color-label">Custom</div>
+          </div>
+          <label class="bg-upload-btn" for="bg-file-input">🖼️ Image</label>
+          <input type="file" id="bg-file-input" accept="image/*" />
+        </div>
+      </div>
+
     </div>
 
     <!-- Result -->
@@ -293,6 +364,30 @@
         <div class="compare-label label-before">BEFORE</div>
         <div class="compare-label label-after">AFTER</div>
       </div>
+
+      <!-- Background Replace Panel -->
+      <div class="bg-panel" id="bg-panel">
+        <div class="bg-panel-title">Replace Background</div>
+        <div class="bg-options">
+          <div class="bg-swatch transparent active" data-type="transparent" title="Transparent"></div>
+          <div class="bg-swatch" style="background:#ffffff" data-type="color" data-color="#ffffff" title="White"></div>
+          <div class="bg-swatch" style="background:#000000" data-type="color" data-color="#000000" title="Black"></div>
+          <div class="bg-swatch" style="background:#f8f0e3" data-type="color" data-color="#f8f0e3" title="Cream"></div>
+          <div class="bg-swatch" style="background:#e8f4fd" data-type="color" data-color="#e8f4fd" title="Light Blue"></div>
+          <div class="bg-swatch" style="background:#e8fdf0" data-type="color" data-color="#e8fdf0" title="Light Green"></div>
+          <div class="bg-swatch" style="background:#fde8f4" data-type="color" data-color="#fde8f4" title="Light Pink"></div>
+          <div class="bg-swatch" style="background:linear-gradient(135deg,#7c6dfa,#ec4899)" data-type="gradient" title="Purple Gradient"></div>
+          <div class="bg-swatch" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)" data-type="gradient2" title="Blue Gradient"></div>
+          <div class="divider"></div>
+          <div class="bg-color-input-wrap" title="Custom color">
+            <input type="color" id="custom-color" value="#ffffff" />
+            <div class="bg-color-label">Custom</div>
+          </div>
+          <label class="bg-upload-btn" for="bg-file-input">🖼️ Image</label>
+          <input type="file" id="bg-file-input" accept="image/*" />
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -337,6 +432,10 @@
   // ── State ───────────────────────────────────────────────
   let originalURL = null;
   let resultURL = null;
+  let resultBlob = null;
+  let currentBgType = 'transparent';
+  let currentBgColor = null;
+  let currentBgImage = null;
 
   // ── DOM refs ────────────────────────────────────────────
   const dropZone = document.getElementById('drop-zone');
@@ -348,6 +447,8 @@
   const resultImg = document.getElementById('result-img');
   const downloadBtn = document.getElementById('download-btn');
   const errorToast = document.getElementById('error-toast');
+  const bgFileInput = document.getElementById('bg-file-input');
+  const customColorInput = document.getElementById('custom-color');
 
   // ── Upload ───────────────────────────────────────────────
   dropZone.addEventListener('click', () => fileInput.click());
@@ -392,20 +493,17 @@
       }
 
       const blob = await response.blob();
+      resultBlob = blob;
       resultURL = URL.createObjectURL(blob);
       resultImg.src = resultURL;
 
-      downloadBtn.onclick = () => {
-        const a = document.createElement('a');
-        a.href = resultURL;
-        a.download = 'bgeraser-result.png';
-        a.click();
-      };
+      updateDownloadBtn();
 
       processing.style.display = 'none';
       uploadWrapper.style.display = 'none';
       resultSection.style.display = 'flex';
       initCompare();
+      initBgPanel();
 
     } catch (err) {
       processing.style.display = 'none';
@@ -418,11 +516,20 @@
     if (originalURL) URL.revokeObjectURL(originalURL);
     if (resultURL) URL.revokeObjectURL(resultURL);
     originalURL = resultURL = null;
+    resultBlob = null;
+    currentBgType = 'transparent';
+    currentBgColor = null;
+    currentBgImage = null;
     fileInput.value = '';
+    bgFileInput.value = '';
     uploadWrapper.style.display = 'block';
     dropZone.style.display = 'block';
     processing.style.display = 'none';
     resultSection.style.display = 'none';
+    // Reset swatch selection
+    document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+    const firstSwatch = document.querySelector('.bg-swatch');
+    if (firstSwatch) firstSwatch.classList.add('active');
   }
 
   // ── Compare slider ───────────────────────────────────────
@@ -447,6 +554,103 @@
     handle.addEventListener('touchstart', e => { dragging = true; e.preventDefault(); }, { passive: false });
     window.addEventListener('touchend', () => dragging = false);
     window.addEventListener('touchmove', e => { if (dragging) setPosition(e.touches[0].clientX); }, { passive: true });
+  }
+
+  // ── Background Replace ─────────────────────────────────
+  function initBgPanel() {
+    document.querySelectorAll('.bg-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        const type = swatch.dataset.type;
+        currentBgType = type;
+        currentBgColor = swatch.dataset.color || null;
+        if (type === 'gradient') currentBgColor = 'gradient-purple';
+        if (type === 'gradient2') currentBgColor = 'gradient-blue';
+        currentBgImage = null;
+        applyBackground();
+      });
+    });
+
+    customColorInput.addEventListener('input', () => {
+      document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+      currentBgType = 'color';
+      currentBgColor = customColorInput.value;
+      currentBgImage = null;
+      applyBackground();
+    });
+
+    bgFileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
+          currentBgType = 'image';
+          currentBgImage = img;
+          currentBgColor = null;
+          applyBackground();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function applyBackground() {
+    if (!resultBlob) return;
+
+    const fgImg = new Image();
+    fgImg.src = resultURL;
+    await new Promise(r => { fgImg.onload = r; });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = fgImg.naturalWidth;
+    canvas.height = fgImg.naturalHeight;
+    const ctx = canvas.getContext('2d');
+
+    if (currentBgType === 'transparent') {
+      ctx.drawImage(fgImg, 0, 0);
+    } else if (currentBgType === 'color' && currentBgColor) {
+      ctx.fillStyle = currentBgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(fgImg, 0, 0);
+    } else if (currentBgType === 'gradient') {
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#7c6dfa');
+      grad.addColorStop(1, '#ec4899');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(fgImg, 0, 0);
+    } else if (currentBgType === 'gradient2') {
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, '#06b6d4');
+      grad.addColorStop(1, '#3b82f6');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(fgImg, 0, 0);
+    } else if (currentBgType === 'image' && currentBgImage) {
+      ctx.drawImage(currentBgImage, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(fgImg, 0, 0);
+    }
+
+    // Update preview
+    const newURL = canvas.toDataURL('image/png');
+    if (resultURL && resultURL.startsWith('blob:')) URL.revokeObjectURL(resultURL);
+    resultURL = newURL;
+    resultImg.src = resultURL;
+    updateDownloadBtn();
+  }
+
+  function updateDownloadBtn() {
+    downloadBtn.onclick = () => {
+      const a = document.createElement('a');
+      a.href = resultURL;
+      a.download = 'bgeraser-result.png';
+      a.click();
+    };
   }
 
   // ── Error toast ──────────────────────────────────────────
