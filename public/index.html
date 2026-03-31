@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -25,7 +26,6 @@
     }
 
     html { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); scroll-behavior: smooth; }
-
     body { min-height: 100vh; overflow-x: hidden; }
 
     /* ── Nav ── */
@@ -39,6 +39,31 @@
     }
     .logo { font-size: 20px; font-weight: 700; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .nav-badge { font-size: 12px; background: rgba(124,109,250,0.15); border: 1px solid rgba(124,109,250,0.3); color: var(--accent2); padding: 4px 12px; border-radius: 20px; }
+
+    /* ── Mode Tabs ── */
+    .mode-tabs {
+      display: flex; gap: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 36px;
+    }
+    .mode-tab {
+      padding: 9px 28px;
+      border-radius: 9px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+      color: var(--text-muted);
+      border: none; background: transparent;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .mode-tab.active {
+      background: var(--gradient);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(124,109,250,0.3);
+    }
+    .mode-tab:not(.active):hover { color: var(--text); }
 
     /* ── Hero ── */
     .hero {
@@ -69,7 +94,7 @@
 
     .hero-sub { font-size: 18px; color: var(--text-muted); max-width: 480px; line-height: 1.6; margin-bottom: 48px; }
 
-    /* ── Upload Zone ── */
+    /* ── Upload Zone (Single) ── */
     .upload-wrapper { width: 100%; max-width: 720px; }
 
     #drop-zone {
@@ -105,7 +130,6 @@
     }
     .btn-upload:hover { opacity: .9; transform: translateY(-1px); }
     #file-input { display: none; }
-
     .formats { font-size: 12px; color: var(--text-muted); margin-top: 16px; }
 
     /* ── Processing ── */
@@ -127,13 +151,12 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .processing-text { font-size: 16px; font-weight: 500; color: var(--text-muted); }
 
-    /* ── Result ── */
+    /* ── Result (Single) ── */
     #result-section {
       display: none;
       width: 100%; max-width: 720px;
       flex-direction: column; align-items: center; gap: 24px;
     }
-
     .result-header { display: flex; align-items: center; justify-content: space-between; width: 100%; }
     .result-title { font-size: 18px; font-weight: 600; }
     .result-actions { display: flex; gap: 10px; }
@@ -160,8 +183,7 @@
     .compare-container img { display: block; width: 100%; height: auto; max-height: 480px; object-fit: contain; }
     .compare-overlay {
       position: absolute; top: 0; left: 0; bottom: 0;
-      overflow: hidden;
-      width: 50%;
+      overflow: hidden; width: 50%;
     }
     .compare-overlay img { width: 100vw; max-width: 720px; max-height: 480px; object-fit: contain; }
     .compare-handle {
@@ -187,7 +209,6 @@
     .label-before { left: 12px; background: rgba(0,0,0,0.6); color: #fff; }
     .label-after { right: 12px; background: rgba(124,109,250,0.8); color: #fff; }
 
-    /* checkerboard bg for transparent image */
     .checker {
       background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
         linear-gradient(-45deg, #ccc 25%, transparent 25%),
@@ -197,44 +218,6 @@
       background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
       background-color: #fff;
     }
-
-    /* ── Features ── */
-    .features {
-      padding: 80px 24px;
-      display: flex; flex-direction: column; align-items: center; gap: 48px;
-    }
-    .features-title { font-size: 32px; font-weight: 700; text-align: center; }
-    .features-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px; width: 100%; max-width: 900px;
-    }
-    .feature-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 28px;
-      transition: border-color .2s;
-    }
-    .feature-card:hover { border-color: rgba(124,109,250,0.4); }
-    .feature-icon { font-size: 32px; margin-bottom: 14px; }
-    .feature-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-    .feature-desc { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
-
-    /* ── Footer ── */
-    footer {
-      text-align: center; padding: 32px 24px;
-      border-top: 1px solid var(--border);
-      font-size: 13px; color: var(--text-muted);
-    }
-
-    /* ── Error ── */
-    .error-toast {
-      display: none; position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-      background: #ef4444; color: #fff; padding: 12px 24px; border-radius: 10px;
-      font-size: 14px; font-weight: 500; z-index: 999;
-      box-shadow: 0 8px 24px rgba(239,68,68,0.3);
-      animation: slideUp .3s ease;
-    }
-    @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity:0; } }
-
 
     /* ── Background Replace Panel ── */
     .bg-panel {
@@ -292,11 +275,195 @@
 
     .divider { width: 1px; height: 36px; background: var(--border); }
 
+    /* ════════════════════════════════════════
+       BATCH MODE
+    ════════════════════════════════════════ */
+    #batch-section { width: 100%; max-width: 860px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+    /* Batch drop zone */
+    #batch-drop-zone {
+      width: 100%;
+      border: 2px dashed rgba(124,109,250,0.4);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 48px 40px;
+      cursor: pointer;
+      transition: all .25s ease;
+      position: relative; overflow: hidden;
+      text-align: center;
+    }
+    #batch-drop-zone::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(124,109,250,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #batch-drop-zone:hover, #batch-drop-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(124,109,250,0.06);
+      transform: translateY(-2px);
+      box-shadow: 0 20px 60px rgba(124,109,250,0.15);
+    }
+    #batch-file-input { display: none; }
+
+    /* Batch toolbar */
+    .batch-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; flex-wrap: wrap; gap: 12px;
+    }
+    .batch-stats { font-size: 14px; color: var(--text-muted); }
+    .batch-stats strong { color: var(--text); }
+    .batch-toolbar-actions { display: flex; gap: 10px; }
+
+    /* Batch progress bar */
+    .batch-progress-wrap {
+      width: 100%;
+      background: var(--surface2); border-radius: 8px;
+      height: 6px; overflow: hidden;
+      display: none;
+    }
+    .batch-progress-bar {
+      height: 100%;
+      background: var(--gradient);
+      border-radius: 8px;
+      transition: width .3s ease;
+      width: 0%;
+    }
+
+    /* Batch grid */
+    .batch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      width: 100%;
+    }
+
+    .batch-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      transition: border-color .2s;
+    }
+    .batch-item:hover { border-color: rgba(124,109,250,0.3); }
+
+    .batch-item-thumb {
+      width: 100%; aspect-ratio: 1;
+      object-fit: cover; display: block;
+      background: var(--surface2);
+    }
+    .batch-item-thumb.checker-sm {
+      background-image: linear-gradient(45deg, #bbb 25%, transparent 25%),
+        linear-gradient(-45deg, #bbb 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #bbb 75%),
+        linear-gradient(-45deg, transparent 75%, #bbb 75%);
+      background-size: 14px 14px;
+      background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+      background-color: #fff;
+    }
+
+    .batch-item-overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(10,10,15,0.65);
+      backdrop-filter: blur(2px);
+    }
+    .batch-item-overlay.hidden { display: none; }
+
+    .batch-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(124,109,250,0.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .batch-status-badge {
+      font-size: 22px;
+    }
+
+    .batch-item-footer {
+      padding: 10px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 6px;
+    }
+    .batch-item-name {
+      font-size: 12px; color: var(--text-muted);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      flex: 1;
+    }
+    .batch-item-dl {
+      flex-shrink: 0;
+      padding: 5px 10px; border-radius: 7px;
+      font-size: 12px; font-weight: 600;
+      background: var(--accent); color: #fff;
+      cursor: pointer; border: none; transition: opacity .15s;
+      display: none;
+    }
+    .batch-item-dl:hover { opacity: .85; }
+    .batch-item-dl.visible { display: block; }
+
+    .batch-item-err {
+      font-size: 11px; color: #f87171;
+      padding: 0 12px 8px;
+    }
+
+    /* Add more button */
+    .batch-add-more {
+      border: 2px dashed rgba(124,109,250,0.3);
+      border-radius: 12px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      aspect-ratio: 1; cursor: pointer;
+      color: var(--text-muted); font-size: 13px;
+      transition: all .2s; gap: 8px;
+      background: transparent;
+    }
+    .batch-add-more:hover { border-color: var(--accent); color: var(--accent2); }
+    .batch-add-more-icon { font-size: 28px; }
+
+    /* ── Features ── */
+    .features {
+      padding: 80px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 48px;
+    }
+    .features-title { font-size: 32px; font-weight: 700; text-align: center; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px; width: 100%; max-width: 900px;
+    }
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      transition: border-color .2s;
+    }
+    .feature-card:hover { border-color: rgba(124,109,250,0.4); }
+    .feature-icon { font-size: 32px; margin-bottom: 14px; }
+    .feature-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .feature-desc { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 32px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--text-muted);
+    }
+
+    /* ── Error Toast ── */
+    .error-toast {
+      display: none; position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+      background: #ef4444; color: #fff; padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; z-index: 999;
+      box-shadow: 0 8px 24px rgba(239,68,68,0.3);
+      animation: slideUp .3s ease;
+    }
+    @keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity:0; } }
+
     @media (max-width: 600px) {
       nav { padding: 14px 20px; }
       .hero { padding: 90px 16px 48px; }
-      #drop-zone { padding: 40px 20px; }
+      #drop-zone, #batch-drop-zone { padding: 40px 20px; }
       .result-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .batch-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
     }
   </style>
 </head>
@@ -313,70 +480,107 @@
     <h1>Remove Image<br/><em>Background Instantly</em></h1>
     <p class="hero-sub">Upload any photo and get a clean transparent PNG in seconds. Perfect for products, portraits, and more.</p>
 
-    <!-- Upload Zone -->
-    <div class="upload-wrapper" id="upload-wrapper">
-      <div id="drop-zone">
-        <span class="drop-icon">🖼️</span>
-        <div class="drop-title">Drop your image here</div>
-        <div class="drop-sub">or click to browse files</div>
-        <label class="btn-upload" for="file-input">Choose Image</label>
-        <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" />
-        <div class="formats">Supports JPG, PNG, WEBP · Max 10MB</div>
-      </div>
-
-      <!-- Processing -->
-      <div id="processing">
-        <div class="spinner"></div>
-        <div class="processing-text">Removing background…</div>
-      </div>
-
-
+    <!-- Mode Tabs -->
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-single" onclick="switchMode('single')">🖼️ Single Image</button>
+      <button class="mode-tab" id="tab-batch" onclick="switchMode('batch')">📦 Batch Process</button>
     </div>
 
-    <!-- Result -->
-    <div id="result-section">
-      <div class="result-header">
-        <div class="result-title">Background removed ✅</div>
-        <div class="result-actions">
-          <button class="btn btn-secondary" onclick="reset()">↩ Try Another</button>
-          <button class="btn btn-primary" id="download-btn">⬇ Download PNG</button>
+    <!-- ══ SINGLE MODE ══ -->
+    <div id="single-mode" style="width:100%;max-width:720px;display:flex;flex-direction:column;align-items:center;">
+
+      <div class="upload-wrapper" id="upload-wrapper">
+        <div id="drop-zone">
+          <span class="drop-icon">🖼️</span>
+          <div class="drop-title">Drop your image here</div>
+          <div class="drop-sub">or click to browse files</div>
+          <label class="btn-upload" for="file-input">Choose Image</label>
+          <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp" />
+          <div class="formats">Supports JPG, PNG, WEBP · Max 10MB</div>
+        </div>
+        <div id="processing">
+          <div class="spinner"></div>
+          <div class="processing-text">Removing background…</div>
         </div>
       </div>
 
-      <div class="compare-container" id="compare">
-        <img id="result-img" class="checker" src="" alt="Result" />
-        <div class="compare-overlay" id="compare-overlay">
-          <img id="original-img" src="" alt="Original" />
-        </div>
-        <div class="compare-handle" id="handle"></div>
-        <div class="compare-label label-before">BEFORE</div>
-        <div class="compare-label label-after">AFTER</div>
-      </div>
-
-      <!-- Background Replace Panel -->
-      <div class="bg-panel" id="bg-panel">
-        <div class="bg-panel-title">Replace Background</div>
-        <div class="bg-options">
-          <div class="bg-swatch transparent active" data-type="transparent" title="Transparent"></div>
-          <div class="bg-swatch" style="background:#ffffff" data-type="color" data-color="#ffffff" title="White"></div>
-          <div class="bg-swatch" style="background:#000000" data-type="color" data-color="#000000" title="Black"></div>
-          <div class="bg-swatch" style="background:#f8f0e3" data-type="color" data-color="#f8f0e3" title="Cream"></div>
-          <div class="bg-swatch" style="background:#e8f4fd" data-type="color" data-color="#e8f4fd" title="Light Blue"></div>
-          <div class="bg-swatch" style="background:#e8fdf0" data-type="color" data-color="#e8fdf0" title="Light Green"></div>
-          <div class="bg-swatch" style="background:#fde8f4" data-type="color" data-color="#fde8f4" title="Light Pink"></div>
-          <div class="bg-swatch" style="background:linear-gradient(135deg,#7c6dfa,#ec4899)" data-type="gradient" title="Purple Gradient"></div>
-          <div class="bg-swatch" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)" data-type="gradient2" title="Blue Gradient"></div>
-          <div class="divider"></div>
-          <div class="bg-color-input-wrap" title="Custom color" id="custom-color-wrap">
-            <div class="bg-color-preview" id="custom-color-preview" style="background:#7c6dfa">
-              <input type="color" id="custom-color" value="#7c6dfa" />
-            </div>
-            <div class="bg-color-label">Pick</div>
+      <div id="result-section">
+        <div class="result-header">
+          <div class="result-title">Background removed ✅</div>
+          <div class="result-actions">
+            <button class="btn btn-secondary" onclick="reset()">↩ Try Another</button>
+            <button class="btn btn-primary" id="download-btn">⬇ Download PNG</button>
           </div>
-          <button class="bg-color-apply" id="custom-color-apply">Apply Color</button>
-          <label class="bg-upload-btn" for="bg-file-input">🖼️ Image</label>
-          <input type="file" id="bg-file-input" accept="image/*" />
         </div>
+
+        <div class="compare-container" id="compare">
+          <img id="result-img" class="checker" src="" alt="Result" />
+          <div class="compare-overlay" id="compare-overlay">
+            <img id="original-img" src="" alt="Original" />
+          </div>
+          <div class="compare-handle" id="handle"></div>
+          <div class="compare-label label-before">BEFORE</div>
+          <div class="compare-label label-after">AFTER</div>
+        </div>
+
+        <div class="bg-panel" id="bg-panel">
+          <div class="bg-panel-title">Replace Background</div>
+          <div class="bg-options">
+            <div class="bg-swatch transparent active" data-type="transparent" title="Transparent"></div>
+            <div class="bg-swatch" style="background:#ffffff" data-type="color" data-color="#ffffff" title="White"></div>
+            <div class="bg-swatch" style="background:#000000" data-type="color" data-color="#000000" title="Black"></div>
+            <div class="bg-swatch" style="background:#f8f0e3" data-type="color" data-color="#f8f0e3" title="Cream"></div>
+            <div class="bg-swatch" style="background:#e8f4fd" data-type="color" data-color="#e8f4fd" title="Light Blue"></div>
+            <div class="bg-swatch" style="background:#e8fdf0" data-type="color" data-color="#e8fdf0" title="Light Green"></div>
+            <div class="bg-swatch" style="background:#fde8f4" data-type="color" data-color="#fde8f4" title="Light Pink"></div>
+            <div class="bg-swatch" style="background:linear-gradient(135deg,#7c6dfa,#ec4899)" data-type="gradient" title="Purple Gradient"></div>
+            <div class="bg-swatch" style="background:linear-gradient(135deg,#06b6d4,#3b82f6)" data-type="gradient2" title="Blue Gradient"></div>
+            <div class="divider"></div>
+            <div class="bg-color-input-wrap" title="Custom color" id="custom-color-wrap">
+              <div class="bg-color-preview" id="custom-color-preview" style="background:#7c6dfa">
+                <input type="color" id="custom-color" value="#7c6dfa" />
+              </div>
+              <div class="bg-color-label">Pick</div>
+            </div>
+            <button class="bg-color-apply" id="custom-color-apply">Apply Color</button>
+            <label class="bg-upload-btn" for="bg-file-input">🖼️ Image</label>
+            <input type="file" id="bg-file-input" accept="image/*" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BATCH MODE ══ -->
+    <div id="batch-mode" style="display:none;width:100%;max-width:860px;display:none;flex-direction:column;align-items:center;gap:24px;">
+
+      <!-- Batch drop zone (shown when no files yet) -->
+      <div id="batch-drop-zone">
+        <span class="drop-icon">📦</span>
+        <div class="drop-title">Drop multiple images here</div>
+        <div class="drop-sub">or click to select files</div>
+        <label class="btn-upload" for="batch-file-input">Choose Images</label>
+        <input type="file" id="batch-file-input" accept="image/png,image/jpeg,image/webp" multiple />
+        <div class="formats">Supports JPG, PNG, WEBP · Up to 20 images · Max 10MB each</div>
+      </div>
+
+      <!-- Batch queue (shown after files added) -->
+      <div id="batch-queue" style="display:none;width:100%;flex-direction:column;gap:20px;">
+
+        <div class="batch-toolbar">
+          <div class="batch-stats" id="batch-stats"><strong id="stat-done">0</strong> / <strong id="stat-total">0</strong> done · <strong id="stat-failed">0</strong> failed</div>
+          <div class="batch-toolbar-actions">
+            <label class="btn btn-secondary" for="batch-file-input" id="batch-add-btn" style="cursor:pointer;">➕ Add More</label>
+            <button class="btn btn-secondary" id="batch-clear-btn" onclick="batchClear()">🗑 Clear All</button>
+            <button class="btn btn-primary" id="batch-run-btn" onclick="batchRun()">▶ Start</button>
+            <button class="btn btn-primary" id="batch-dl-btn" style="display:none;" onclick="batchDownloadAll()">⬇ Download All (ZIP)</button>
+          </div>
+        </div>
+
+        <div class="batch-progress-wrap" id="batch-progress-wrap">
+          <div class="batch-progress-bar" id="batch-progress-bar"></div>
+        </div>
+
+        <div class="batch-grid" id="batch-grid"></div>
       </div>
 
     </div>
@@ -401,9 +605,9 @@
         <div class="feature-desc">Your images are processed and immediately discarded. Nothing is stored.</div>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📱</div>
-        <div class="feature-name">Works Everywhere</div>
-        <div class="feature-desc">Fully responsive — use it on desktop, tablet, or mobile with ease.</div>
+        <div class="feature-icon">📦</div>
+        <div class="feature-name">Batch Processing</div>
+        <div class="feature-desc">Remove backgrounds from up to 20 images at once and download them all as a ZIP.</div>
       </div>
     </div>
   </section>
@@ -416,20 +620,30 @@
 <div class="error-toast" id="error-toast"></div>
 
 <script>
-  // ── Config ──────────────────────────────────────────────
-  // Replace with your deployed Cloudflare Worker URL
+  // ── Config ───────────────────────────────────────────────
   const WORKER_URL = 'https://image-bg-remover-worker.mistyfish9.workers.dev/';
+  const MAX_BATCH = 20;
+  const CONCURRENCY = 2; // parallel requests
 
-  // ── State ───────────────────────────────────────────────
+  // ── Mode switch ──────────────────────────────────────────
+  function switchMode(mode) {
+    document.getElementById('tab-single').classList.toggle('active', mode === 'single');
+    document.getElementById('tab-batch').classList.toggle('active', mode === 'batch');
+    document.getElementById('single-mode').style.display = mode === 'single' ? 'flex' : 'none';
+    document.getElementById('batch-mode').style.display = mode === 'batch' ? 'flex' : 'none';
+  }
+
+  // ════════════════════════════════════════
+  // SINGLE MODE
+  // ════════════════════════════════════════
   let originalURL = null;
   let resultURL = null;
   let resultBlob = null;
-  let transparentURL = null; // always the original transparent PNG
+  let transparentURL = null;
   let currentBgType = 'transparent';
   let currentBgColor = null;
   let currentBgImage = null;
 
-  // ── DOM refs ────────────────────────────────────────────
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
   const processing = document.getElementById('processing');
@@ -442,62 +656,45 @@
   const bgFileInput = document.getElementById('bg-file-input');
   const customColorInput = document.getElementById('custom-color');
 
-  // ── Upload ───────────────────────────────────────────────
   dropZone.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
-
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
   dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
+    e.preventDefault(); dropZone.classList.remove('dragover');
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
   });
 
   async function handleFile(file) {
     if (!file) return;
-    if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
-      showError('Please upload a JPG, PNG, or WEBP image.');
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      showError('File too large. Maximum size is 10MB.');
-      return;
-    }
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { showError('Please upload a JPG, PNG, or WEBP image.'); return; }
+    if (file.size > 10 * 1024 * 1024) { showError('File too large. Maximum size is 10MB.'); return; }
 
     originalURL = URL.createObjectURL(file);
     originalImg.src = originalURL;
-
-    // Show processing
     dropZone.style.display = 'none';
     processing.style.display = 'flex';
 
     try {
       const formData = new FormData();
       formData.append('image_file', file);
-
       const response = await fetch(WORKER_URL, { method: 'POST', body: formData });
-
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
-        throw new Error(err.error || `API error ${response.status}`);
+        throw new Error(err.error || 'API error ' + response.status);
       }
-
       const blob = await response.blob();
       resultBlob = blob;
       resultURL = URL.createObjectURL(blob);
-      transparentURL = resultURL; // save original transparent PNG URL
+      transparentURL = resultURL;
       resultImg.src = resultURL;
-
       updateDownloadBtn();
-
       processing.style.display = 'none';
       uploadWrapper.style.display = 'none';
       resultSection.style.display = 'flex';
       initCompare();
       initBgPanel();
-
     } catch (err) {
       processing.style.display = 'none';
       dropZone.style.display = 'block';
@@ -508,31 +705,23 @@
   function reset() {
     if (originalURL) URL.revokeObjectURL(originalURL);
     if (resultURL) URL.revokeObjectURL(resultURL);
-    originalURL = resultURL = null;
-    resultBlob = null;
-    transparentURL = null;
-    currentBgType = 'transparent';
-    currentBgColor = null;
-    currentBgImage = null;
-    fileInput.value = '';
-    bgFileInput.value = '';
+    originalURL = resultURL = null; resultBlob = null; transparentURL = null;
+    currentBgType = 'transparent'; currentBgColor = null; currentBgImage = null;
+    fileInput.value = ''; bgFileInput.value = '';
     uploadWrapper.style.display = 'block';
     dropZone.style.display = 'block';
     processing.style.display = 'none';
     resultSection.style.display = 'none';
-    // Reset swatch selection
     document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
-    const firstSwatch = document.querySelector('.bg-swatch');
-    if (firstSwatch) firstSwatch.classList.add('active');
+    const first = document.querySelector('.bg-swatch');
+    if (first) first.classList.add('active');
   }
 
-  // ── Compare slider ───────────────────────────────────────
   function initCompare() {
     const container = document.getElementById('compare');
     const overlay = document.getElementById('compare-overlay');
     const handle = document.getElementById('handle');
     let dragging = false;
-
     function setPosition(x) {
       const rect = container.getBoundingClientRect();
       let pct = (x - rect.left) / rect.width;
@@ -540,17 +729,14 @@
       overlay.style.width = (pct * 100) + '%';
       handle.style.left = (pct * 100) + '%';
     }
-
     handle.addEventListener('mousedown', () => dragging = true);
     window.addEventListener('mouseup', () => dragging = false);
     window.addEventListener('mousemove', e => { if (dragging) setPosition(e.clientX); });
-
     handle.addEventListener('touchstart', e => { dragging = true; e.preventDefault(); }, { passive: false });
     window.addEventListener('touchend', () => dragging = false);
     window.addEventListener('touchmove', e => { if (dragging) setPosition(e.touches[0].clientX); }, { passive: true });
   }
 
-  // ── Background Replace ─────────────────────────────────
   function initBgPanel() {
     document.querySelectorAll('.bg-swatch').forEach(swatch => {
       swatch.addEventListener('click', () => {
@@ -562,44 +748,31 @@
         if (type === 'gradient') currentBgColor = 'gradient-purple';
         if (type === 'gradient2') currentBgColor = 'gradient-blue';
         currentBgImage = null;
-        if (type === 'transparent') {
-          resultURL = transparentURL;
-          resultImg.src = resultURL;
-          updateDownloadBtn();
-        } else {
-          applyBackground();
-        }
+        if (type === 'transparent') { resultURL = transparentURL; resultImg.src = resultURL; updateDownloadBtn(); }
+        else applyBackground();
       });
     });
 
-    // Update preview swatch color live as user picks
     customColorInput.addEventListener('input', () => {
       document.getElementById('custom-color-preview').style.background = customColorInput.value;
     });
     customColorInput.addEventListener('change', () => {
       document.getElementById('custom-color-preview').style.background = customColorInput.value;
     });
-
-    // Apply button applies the chosen color
     document.getElementById('custom-color-apply').addEventListener('click', () => {
       document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
-      currentBgType = 'color';
-      currentBgColor = customColorInput.value;
-      currentBgImage = null;
+      currentBgType = 'color'; currentBgColor = customColorInput.value; currentBgImage = null;
       applyBackground();
     });
 
     bgFileInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
+      const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = ev => {
         const img = new Image();
         img.onload = () => {
           document.querySelectorAll('.bg-swatch').forEach(s => s.classList.remove('active'));
-          currentBgType = 'image';
-          currentBgImage = img;
-          currentBgColor = null;
+          currentBgType = 'image'; currentBgImage = img; currentBgColor = null;
           applyBackground();
         };
         img.src = ev.target.result;
@@ -610,63 +783,258 @@
 
   async function applyBackground() {
     if (!transparentURL) return;
-
-    const fgImg = new Image();
-    fgImg.crossOrigin = 'anonymous';
-    fgImg.src = transparentURL;
+    const fgImg = new Image(); fgImg.crossOrigin = 'anonymous'; fgImg.src = transparentURL;
     await new Promise(r => { fgImg.onload = r; });
-
     const canvas = document.createElement('canvas');
-    canvas.width = fgImg.naturalWidth;
-    canvas.height = fgImg.naturalHeight;
+    canvas.width = fgImg.naturalWidth; canvas.height = fgImg.naturalHeight;
     const ctx = canvas.getContext('2d');
-
     if (currentBgType === 'transparent') {
       ctx.drawImage(fgImg, 0, 0);
     } else if (currentBgType === 'color' && currentBgColor) {
-      ctx.fillStyle = currentBgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(fgImg, 0, 0);
+      ctx.fillStyle = currentBgColor; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(fgImg, 0, 0);
     } else if (currentBgType === 'gradient') {
       const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, '#7c6dfa');
-      grad.addColorStop(1, '#ec4899');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(fgImg, 0, 0);
+      grad.addColorStop(0, '#7c6dfa'); grad.addColorStop(1, '#ec4899');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(fgImg, 0, 0);
     } else if (currentBgType === 'gradient2') {
       const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, '#06b6d4');
-      grad.addColorStop(1, '#3b82f6');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(fgImg, 0, 0);
+      grad.addColorStop(0, '#06b6d4'); grad.addColorStop(1, '#3b82f6');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(fgImg, 0, 0);
     } else if (currentBgType === 'image' && currentBgImage) {
-      ctx.drawImage(currentBgImage, 0, 0, canvas.width, canvas.height);
-      ctx.drawImage(fgImg, 0, 0);
+      ctx.drawImage(currentBgImage, 0, 0, canvas.width, canvas.height); ctx.drawImage(fgImg, 0, 0);
     }
-
-    // Update preview (never revoke transparentURL)
-    const newURL = canvas.toDataURL('image/png');
-    resultURL = newURL;
+    resultURL = canvas.toDataURL('image/png');
     resultImg.src = resultURL;
     updateDownloadBtn();
   }
 
   function updateDownloadBtn() {
     downloadBtn.onclick = () => {
-      const a = document.createElement('a');
-      a.href = resultURL;
-      a.download = 'bgeraser-result.png';
-      a.click();
+      const a = document.createElement('a'); a.href = resultURL; a.download = 'bgeraser-result.png'; a.click();
     };
+  }
+
+  // ════════════════════════════════════════
+  // BATCH MODE
+  // ════════════════════════════════════════
+  // Each item: { id, file, status: 'pending'|'processing'|'done'|'error', resultBlob, errorMsg }
+  let batchItems = [];
+  let batchRunning = false;
+
+  const batchDropZone = document.getElementById('batch-drop-zone');
+  const batchFileInput = document.getElementById('batch-file-input');
+
+  batchDropZone.addEventListener('click', () => batchFileInput.click());
+  batchFileInput.addEventListener('change', e => batchAddFiles(Array.from(e.target.files)));
+  batchDropZone.addEventListener('dragover', e => { e.preventDefault(); batchDropZone.classList.add('dragover'); });
+  batchDropZone.addEventListener('dragleave', () => batchDropZone.classList.remove('dragover'));
+  batchDropZone.addEventListener('drop', e => {
+    e.preventDefault(); batchDropZone.classList.remove('dragover');
+    batchAddFiles(Array.from(e.dataTransfer.files));
+  });
+
+  function batchAddFiles(files) {
+    const valid = files.filter(f => ['image/jpeg','image/png','image/webp'].includes(f.type) && f.size <= 10*1024*1024);
+    const remaining = MAX_BATCH - batchItems.length;
+    if (valid.length === 0) { showError('No valid images (JPG/PNG/WEBP, max 10MB each).'); return; }
+    if (files.length > valid.length) showError((files.length - valid.length) + ' file(s) skipped (wrong type or too large).');
+
+    const toAdd = valid.slice(0, remaining);
+    if (toAdd.length < valid.length) showError('Maximum ' + MAX_BATCH + ' images. Some were skipped.');
+
+    toAdd.forEach(file => {
+      const id = Date.now() + Math.random();
+      batchItems.push({ id, file, status: 'pending', resultBlob: null, errorMsg: null });
+    });
+
+    if (batchItems.length > 0) {
+      document.getElementById('batch-drop-zone').style.display = 'none';
+      const q = document.getElementById('batch-queue');
+      q.style.display = 'flex';
+      batchRenderGrid();
+      batchUpdateStats();
+    }
+    batchFileInput.value = '';
+  }
+
+  function batchRenderGrid() {
+    const grid = document.getElementById('batch-grid');
+    grid.innerHTML = '';
+    batchItems.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'batch-item';
+      el.id = 'batch-item-' + item.id;
+
+      const thumbSrc = URL.createObjectURL(item.file);
+      const resultSrc = item.resultBlob ? URL.createObjectURL(item.resultBlob) : '';
+
+      let overlayHTML = '';
+      if (item.status === 'processing') {
+        overlayHTML = '<div class="batch-item-overlay"><div class="batch-spinner"></div></div>';
+      } else if (item.status === 'pending') {
+        overlayHTML = '<div class="batch-item-overlay"><div class="batch-status-badge">⏳</div></div>';
+      } else if (item.status === 'error') {
+        overlayHTML = '<div class="batch-item-overlay"><div class="batch-status-badge">❌</div></div>';
+      } else {
+        overlayHTML = '<div class="batch-item-overlay hidden"></div>';
+      }
+
+      const imgSrc = item.status === 'done' ? resultSrc : thumbSrc;
+      const imgClass = item.status === 'done' ? 'batch-item-thumb checker-sm' : 'batch-item-thumb';
+      const dlVisible = item.status === 'done' ? 'visible' : '';
+      const errHTML = item.status === 'error' ? '<div class="batch-item-err">' + (item.errorMsg || 'Failed') + '</div>' : '';
+
+      el.innerHTML =
+        '<img class="' + imgClass + '" src="' + imgSrc + '" alt="' + item.file.name + '" />' +
+        overlayHTML +
+        '<div class="batch-item-footer">' +
+          '<span class="batch-item-name">' + item.file.name + '</span>' +
+          '<button class="batch-item-dl ' + dlVisible + '" data-id="' + item.id + '">⬇</button>' +
+        '</div>' +
+        errHTML;
+
+      grid.appendChild(el);
+    });
+
+    // Add-more tile
+    if (batchItems.length < MAX_BATCH && !batchRunning) {
+      const addEl = document.createElement('label');
+      addEl.className = 'batch-add-more';
+      addEl.htmlFor = 'batch-file-input';
+      addEl.innerHTML = '<span class="batch-add-more-icon">➕</span><span>Add more</span>';
+      grid.appendChild(addEl);
+    }
+
+    // Download individual
+    grid.querySelectorAll('.batch-item-dl').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = parseFloat(btn.dataset.id);
+        const item = batchItems.find(x => x.id === id);
+        if (item && item.resultBlob) {
+          const url = URL.createObjectURL(item.resultBlob);
+          const a = document.createElement('a');
+          a.href = url; a.download = 'bgeraser-' + item.file.name.replace(/\.[^.]+$/, '') + '.png'; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        }
+      });
+    });
+  }
+
+  function batchUpdateItemUI(item) {
+    const el = document.getElementById('batch-item-' + item.id);
+    if (!el) return;
+
+    const overlay = el.querySelector('.batch-item-overlay');
+    const thumb = el.querySelector('.batch-item-thumb');
+    const dlBtn = el.querySelector('.batch-item-dl');
+    let errEl = el.querySelector('.batch-item-err');
+
+    if (item.status === 'processing') {
+      if (overlay) { overlay.classList.remove('hidden'); overlay.innerHTML = '<div class="batch-spinner"></div>'; }
+    } else if (item.status === 'done') {
+      const resultSrc = URL.createObjectURL(item.resultBlob);
+      thumb.src = resultSrc; thumb.className = 'batch-item-thumb checker-sm';
+      if (overlay) overlay.classList.add('hidden');
+      if (dlBtn) dlBtn.classList.add('visible');
+      if (errEl) errEl.remove();
+    } else if (item.status === 'error') {
+      if (overlay) { overlay.classList.remove('hidden'); overlay.innerHTML = '<div class="batch-status-badge">❌</div>'; }
+      if (!errEl) { errEl = document.createElement('div'); errEl.className = 'batch-item-err'; el.appendChild(errEl); }
+      errEl.textContent = item.errorMsg || 'Failed';
+    }
+  }
+
+  function batchUpdateStats() {
+    const done = batchItems.filter(x => x.status === 'done').length;
+    const failed = batchItems.filter(x => x.status === 'error').length;
+    const total = batchItems.length;
+    document.getElementById('stat-done').textContent = done;
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-failed').textContent = failed;
+
+    const finished = done + failed;
+    const pct = total > 0 ? (finished / total * 100) : 0;
+    document.getElementById('batch-progress-bar').style.width = pct + '%';
+
+    const allFinished = batchItems.length > 0 && finished === total;
+    document.getElementById('batch-run-btn').style.display = (batchRunning || allFinished) ? 'none' : '';
+    document.getElementById('batch-dl-btn').style.display = (done > 0 && allFinished) ? '' : 'none';
+  }
+
+  async function batchRun() {
+    if (batchRunning) return;
+    const pending = batchItems.filter(x => x.status === 'pending');
+    if (pending.length === 0) return;
+
+    batchRunning = true;
+    document.getElementById('batch-run-btn').style.display = 'none';
+    document.getElementById('batch-progress-wrap').style.display = 'block';
+    batchRenderGrid(); // re-render to remove add-more tile
+
+    // Process with concurrency limit
+    let idx = 0;
+    async function worker() {
+      while (idx < pending.length) {
+        const item = pending[idx++];
+        item.status = 'processing';
+        batchUpdateItemUI(item);
+        batchUpdateStats();
+        try {
+          const fd = new FormData(); fd.append('image_file', item.file);
+          const res = await fetch(WORKER_URL, { method: 'POST', body: fd });
+          if (!res.ok) {
+            const e = await res.json().catch(() => ({}));
+            throw new Error(e.error || 'API error ' + res.status);
+          }
+          item.resultBlob = await res.blob();
+          item.status = 'done';
+        } catch(e) {
+          item.status = 'error';
+          item.errorMsg = e.message || 'Failed';
+        }
+        batchUpdateItemUI(item);
+        batchUpdateStats();
+      }
+    }
+
+    const workers = Array.from({ length: CONCURRENCY }, () => worker());
+    await Promise.all(workers);
+    batchRunning = false;
+    batchRenderGrid();
+  }
+
+  function batchClear() {
+    if (batchRunning) { showError('Please wait for processing to finish.'); return; }
+    batchItems = [];
+    document.getElementById('batch-queue').style.display = 'none';
+    document.getElementById('batch-drop-zone').style.display = 'block';
+    document.getElementById('batch-progress-wrap').style.display = 'none';
+    document.getElementById('batch-progress-bar').style.width = '0%';
+    document.getElementById('batch-dl-btn').style.display = 'none';
+    document.getElementById('batch-run-btn').style.display = '';
+  }
+
+  async function batchDownloadAll() {
+    const done = batchItems.filter(x => x.status === 'done');
+    if (done.length === 0) return;
+
+    const zip = new JSZip();
+    done.forEach(item => {
+      const name = 'bgeraser-' + item.file.name.replace(/\.[^.]+$/, '') + '.png';
+      zip.file(name, item.resultBlob);
+    });
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'bgeraser-batch.zip'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 
   // ── Error toast ──────────────────────────────────────────
   function showError(msg) {
-    errorToast.textContent = msg;
-    errorToast.style.display = 'block';
-    setTimeout(() => errorToast.style.display = 'none', 4000);
+    const toast = document.getElementById('error-toast');
+    toast.textContent = msg; toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 4000);
   }
 </script>
 </body>
