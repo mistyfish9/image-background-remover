@@ -408,6 +408,36 @@
       padding: 0 12px 8px;
     }
 
+    /* batch-bg-swatch shares same style as bg-swatch */
+    .batch-bg-swatch {
+      width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+      border: 2px solid transparent; transition: all .15s;
+      flex-shrink: 0;
+    }
+    .batch-bg-swatch:hover, .batch-bg-swatch.active { border-color: var(--accent); transform: scale(1.1); }
+    .batch-bg-swatch.transparent {
+      background-image: linear-gradient(45deg, #aaa 25%, transparent 25%),
+        linear-gradient(-45deg, #aaa 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #aaa 75%),
+        linear-gradient(-45deg, transparent 75%, #aaa 75%);
+      background-size: 10px 10px;
+      background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+      background-color: #fff;
+    }
+
+    /* Delete button on batch items */
+    .batch-item-del {
+      position: absolute; top: 6px; right: 6px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(0,0,0,0.55); color: #fff;
+      border: none; cursor: pointer; font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .15s;
+      z-index: 5;
+    }
+    .batch-item:hover .batch-item-del { opacity: 1; }
+    .batch-item-del:hover { background: #ef4444; }
+
     /* Add more button */
     .batch-add-more {
       border: 2px dashed rgba(124,109,250,0.3);
@@ -918,6 +948,7 @@
       el.innerHTML =
         '<img class="' + imgClass + '" src="' + imgSrc + '" alt="' + item.file.name + '" />' +
         overlayHTML +
+        (item.status === 'pending' ? '<button class="batch-item-del" data-del-id="' + item.id + '" title="Remove">✕</button>' : '') +
         '<div class="batch-item-footer">' +
           '<span class="batch-item-name">' + item.file.name + '</span>' +
           '<button class="batch-item-dl ' + dlVisible + '" data-id="' + item.id + '">⬇</button>' +
@@ -947,6 +978,21 @@
           const a = document.createElement('a');
           a.href = url; a.download = 'bgeraser-' + item.file.name.replace(/\.[^.]+$/, '') + '.png'; a.click();
           setTimeout(() => URL.revokeObjectURL(url), 5000);
+        }
+      });
+    });
+
+    // Delete individual pending item
+    grid.querySelectorAll('.batch-item-del').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = parseFloat(btn.dataset.delId);
+        batchItems = batchItems.filter(x => x.id !== id);
+        if (batchItems.length === 0) {
+          batchClear();
+        } else {
+          batchRenderGrid();
+          batchUpdateStats();
         }
       });
     });
@@ -1035,7 +1081,6 @@
     await Promise.all(workers);
     batchRunning = false;
     batchRenderGrid();
-    initBatchBgPanel();
   }
 
   function batchClear() {
@@ -1109,14 +1154,11 @@
 
   function initBatchBgPanel() {
     document.querySelectorAll('.batch-bg-swatch').forEach(swatch => {
-      // avoid duplicate listeners
-      const newSwatch = swatch.cloneNode(true);
-      swatch.parentNode.replaceChild(newSwatch, swatch);
-      newSwatch.addEventListener('click', () => {
+      swatch.addEventListener('click', () => {
         document.querySelectorAll('.batch-bg-swatch').forEach(s => s.classList.remove('active'));
-        newSwatch.classList.add('active');
-        batchBgType = newSwatch.dataset.type;
-        batchBgColor = newSwatch.dataset.color || null;
+        swatch.classList.add('active');
+        batchBgType = swatch.dataset.type;
+        batchBgColor = swatch.dataset.color || null;
         batchBgImageEl = null;
       });
     });
@@ -1125,18 +1167,14 @@
     const batchCustomPreview = document.getElementById('batch-custom-color-preview');
     batchCustomColor.addEventListener('input', () => { batchCustomPreview.style.background = batchCustomColor.value; });
 
-    const applyBtn = document.getElementById('batch-custom-color-apply');
-    const newApplyBtn = applyBtn.cloneNode(true);
-    applyBtn.parentNode.replaceChild(newApplyBtn, applyBtn);
-    newApplyBtn.addEventListener('click', () => {
+    document.getElementById('batch-custom-color-apply').addEventListener('click', () => {
       document.querySelectorAll('.batch-bg-swatch').forEach(s => s.classList.remove('active'));
-      batchBgType = 'color'; batchBgColor = batchCustomColor.value; batchBgImageEl = null;
+      batchBgType = 'color';
+      batchBgColor = batchCustomColor.value;
+      batchBgImageEl = null;
     });
 
-    const bgFileInput = document.getElementById('batch-bg-file-input');
-    const newBgInput = bgFileInput.cloneNode(true);
-    bgFileInput.parentNode.replaceChild(newBgInput, bgFileInput);
-    newBgInput.addEventListener('change', e => {
+    document.getElementById('batch-bg-file-input').addEventListener('change', e => {
       const file = e.target.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = ev => {
@@ -1150,6 +1188,9 @@
       reader.readAsDataURL(file);
     });
   }
+
+  // Initialize batch bg panel once on page load
+  initBatchBgPanel();
 
   // ── Error toast ──────────────────────────────────────────
   function showError(msg) {
